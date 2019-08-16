@@ -59,7 +59,7 @@ export default {
 
                 setTimeout(() => {
                   vm.streaming[i].plugin.send({ 'message': body })
-                }, 100) // Fuck knows why this works...
+                }, 100) // God knows why this works...
               }
             },
             error: function (error) { console.log(error) },
