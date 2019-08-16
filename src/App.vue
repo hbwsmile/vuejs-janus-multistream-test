@@ -2,7 +2,7 @@
   <div id="app">
     <!-- Janus Videos List -->
     <div v-if="!loading">
-      <JanusVideo :janus="janus" :cameras="['1', '2', '3', '4']" />
+      <JanusVideo :janus="janus" :cameras="['1', '2', '3', '4', '5', '6', '7', '8']" />
     </div>
   </div>
 </template>
@@ -29,10 +29,10 @@ export default {
   methods: {
     initJanus () {
       this.loading = true
-      let server = 'http://localhost:8088/janus'
+      let server = 'https://janus.conf.meetecho.com/janus'
       console.log('calling Janus init')
       Janus.init({
-        debug: 'all',
+        //debug: 'all',
         callback: () => {
           this.janus = new Janus(
             {

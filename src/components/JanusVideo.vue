@@ -53,13 +53,12 @@ export default {
                 console.log('pluginHandle=', pluginHandle)
 
                 vm.streaming.push({ id: i, plugin: pluginHandle })
-                let body = { 'request': 'watch', id: parseInt('99') }
+
+                let body = { 'request': 'watch', id: parseInt('1') }
 
                 console.log(`iteration ${i} sending watch request::`)
 
-                setTimeout(() => {
-                  vm.streaming[i].plugin.send({ 'message': body })
-                }, 100) // God knows why this works...
+                pluginHandle.send({ 'message': body })
               }
             },
             error: function (error) { console.log(error) },
