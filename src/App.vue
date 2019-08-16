@@ -2,7 +2,7 @@
   <div id="app">
     <!-- Janus Videos List -->
     <div v-if="!loading">
-      <JanusVideo :janus="janus" :cameras="['1', '2', '3' ]" />
+      <JanusVideo :janus="janus" :cameras="['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15']" />
     </div>
   </div>
 </template>
@@ -29,9 +29,10 @@ export default {
   methods: {
     initJanus () {
       this.loading = true
-      let server = 'https://janus.conf.meetecho.com/janus'
+      let server = 'http://localhost:8088/janus'
+      console.log('calling Janus init')
       Janus.init({
-        debug: 'all',
+        // debug: 'all',
         callback: () => {
           this.janus = new Janus(
             {
@@ -43,7 +44,7 @@ export default {
                 console.log(cause)
               },
               destroyed: () => {
-                console.log('Destroyed from inside janus handle')
+                console.log('janus init destroyed')
               }
             })
         }

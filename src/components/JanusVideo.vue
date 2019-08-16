@@ -32,48 +32,55 @@ export default {
       streaming: []
     }
   },
-  created () {
-    setTimeout(() => this.initJanus(), 4000)
+  mounted () {
+    this.initJanus()
   },
   methods: {
     // Init Janus
     initJanus () {
       const vm = this
       for (let i = 0; i < this.cameras.length; i++) {
+        console.log(`this is iteration ${i} of the for loop`)
         this.janus.attach(
           {
             opaqueId: 'test-' + i,
+
             plugin: 'janus.plugin.streaming',
             success: function (pluginHandle) {
-              console.log('catched plugin handle ', pluginHandle)
+              console.log(`iteration ${i} janus attach - onSuccess called, plugin handle::`, pluginHandle)
+
               if (pluginHandle) {
-                console.log('plugin handle found', pluginHandle)
+                console.log('pluginHandle=', pluginHandle)
+
                 vm.streaming.push({ id: i, plugin: pluginHandle })
-                let body = { 'request': 'watch', id: parseInt('1') }
-                console.log('index in plugin handle success', i)
-                vm.streaming[i].plugin.send({ 'message': body })
-                console.log(vm.streaming)
+                let body = { 'request': 'watch', id: parseInt('99') }
+
+                console.log(`iteration ${i} sending watch request::`)
+
+                setTimeout(() => {
+                  vm.streaming[i].plugin.send({ 'message': body })
+                }, 100) // Fuck knows why this works...
               }
             },
             error: function (error) { console.log(error) },
             onmessage: function (msg, jsep) {
-              Janus.log('message', msg)
-              console.log('jsep', jsep)
+              console.log(`iteration ${i} new message received! msg::`, msg)
+              console.log(`iteration ${i} the accompanying jsep was::`, jsep)
+
               if (jsep !== undefined && jsep !== null) {
-                // Offer from the plugin, let's answer
-                console.log('index in on message', i)
-                console.log('array of streams', vm.streaming)
+                console.log(`iteration ${i} jsep was not null or undefined THIS IS GOOD`)
+
                 const foundStream = vm.streaming.find(s => s.id === i)
-                console.log('foundStream', foundStream)
+
                 if (jsep.type === 'offer') {
+                  console.log(`iteration ${i} the jsep type was an offer, lets make an answer`)
                   foundStream.plugin.createAnswer(
                     {
                       jsep,
                       media: { audioSend: false, videoSend: false },
                       success: function (jsep) {
+                        console.log(`iteration ${i} sending a message to request the stream starts`)
                         const body = { 'request': 'start' }
-                        console.log('start', jsep)
-                        console.log('index in on message success', i)
 
                         foundStream.plugin.send({ 'message': body, 'jsep': jsep })
                       },
@@ -82,19 +89,12 @@ export default {
                       }
                     }
                   )
-                } else {
-                  foundStream.plugin.handleRemoteJsep({ jsep: jsep })
                 }
-              } else {
-                let body = { 'request': 'watch', id: parseInt('1') }
-                console.log('index when we are retrying', i)
-                vm.streaming[i].plugin.send({ 'message': body })
               }
             },
             onremotestream: function (stream) {
-              console.log('on remote stream being called')
+              console.log(`iteration ${i} on remote stream being called`)
               const element = document.getElementById(`janusVideo${i}`)
-              console.log('this is the element', element)
               Janus.attachMediaStream(element, stream)
             }
           })
